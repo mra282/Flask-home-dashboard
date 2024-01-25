@@ -1,0 +1,20 @@
+<!-- templates/widgets/time.html -->
+<div class="widget bg-white bg-opacity-25 border border-blue-500 rounded-lg shadow-lg p-4 backdrop-blur-md col-start-{{ col_start }} col-end-{{ col_end }} row-start-{{ row_start }} row-end-{{ row_end }}">
+    <h2 class="text-2xl font-bold mb-2">Current Time</h2>
+    <p id="clock" class="text-xl"></p>
+</div>
+
+<script>
+    function updateTime() {
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const seconds = now.getSeconds();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const twelveHour = hours > 12 ? hours - 12 : hours;
+        const timeString = `${twelveHour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} ${ampm}`;
+        document.getElementById('clock').textContent = timeString;
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
+</script>

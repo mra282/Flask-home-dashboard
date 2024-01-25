@@ -1,0 +1,36 @@
+<div class="widget pihole-widget bg-white bg-opacity-25 border border-blue-500 rounded-lg shadow-lg p-4 backdrop-blur-md" style="grid-column-start: {{ widget.col_start }}; grid-column-end: {{ widget.col_end }}; grid-row-start: {{ widget.row_start }}; grid-row-end: {{ widget.row_end }};">
+    <div class="total-queries">
+        <h2 class="text-xl font-bold">Total Queries</h2>
+        <p class="text-lg" data-value="0">0</p>
+    </div>
+    <div class="queries-blocked">
+        <h2 class="text-xl font-bold">Queries Blocked</h2>
+        <p class="text-lg" data-value="0">0</p>
+    </div>
+    <div class="percentage-blocked col-span-2">
+        <h2 class="text-xl font-bold">Percentage Blocked</h2>
+        <p class="text-lg" data-value="0">0%</p>
+    </div>
+</div>
+
+<script>
+    const widget = document.querySelector('.pihole-widget');
+    const updateInterval = {{ widget.update_interval }};
+    const endpoint = "{{ widget.endpoint }}";
+
+    function fetchData() {
+        fetch(endpoint)
+            .then(response => response.json())
+            .then(data => {
+                widget.querySelector('.total-queries [data-value]').textContent = data.total_queries;
+                widget.querySelector('.queries-blocked [data-value]').textContent = data.queries_blocked;
+                widget.querySelector('.percentage-blocked [data-value]').textContent = data.percentage_blocked + '%';
+            });
+    }
+
+    // Run initially
+    fetchData();
+
+    // Then run at set interval
+    setInterval(fetchData, updateInterval);
+</script>

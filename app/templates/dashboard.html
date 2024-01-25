@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-900 text-white">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="h-full">
+    <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-4xl font-bold">Home</h1>
+            <p id="clock" class="text-xl"></p>
+        </div>
+        <div class="grid grid-cols-{{ total_cols }} grid-rows-{{ total_rows }} gap-4">
+
+            {% set widget = {'id': 'widget1', 'col_start': 1, 'col_end': 6, 'row_start': 1, 'row_end': 1} %}
+            {% include 'widgets/weather.html' %}
+
+            {% set widget = {'id': 'widget2', 'col_start': 1, 'col_end': 4, 'row_start': 2, 'row_end': 2, 'update_interval': 60000, 'endpoint': '/api/pihole'} %}
+            {% include 'widgets/pihole.html' %}
+
+            {% set widget = {'id': 'widget3', 'col_start': 4, 'col_end': 4, 'row_start': 2, 'row_end': 2, 'update_interval': 60000, 'endpoint': '/api/homeassistant/sensor/office_motion_temperature'} %}
+            {% include 'widgets/hassio_sensor.html' %}
+
+            {% set widget = {'id': 'widget4', 'col_start': 5, 'col_end': 5, 'row_start': 2, 'row_end': 2, 'update_interval': 60000, 'endpoint': '/api/homeassistant/light/spare_room_3'} %}
+            {% include 'widgets/hassio_button.html' %}
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    function updateTime() {
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const seconds = now.getSeconds();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const twelveHour = hours > 12 ? hours - 12 : hours;
+        const timeString = `${twelveHour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')} ${ampm}`;
+        document.getElementById('clock').textContent = timeString;
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
+</script>

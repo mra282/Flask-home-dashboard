@@ -1,0 +1,46 @@
+<div id="{{ widget.id }}" class="widget hassio-button-widget bg-opacity-25 border border-blue-500 rounded-lg shadow-lg p-4 backdrop-blur-md" style="grid-column-start: {{ widget.col_start }}; grid-column-end: {{ widget.col_end }}; grid-row-start: {{ widget.row_start }}; grid-row-end: {{ widget.row_end }};">
+    <button class="hassio-button text-lg" data-state="off">Toggle</button>
+</div>
+
+<script>
+    (function() {
+        var widget = document.querySelector('#{{ widget.id }}');
+        var updateInterval = {{ widget.update_interval }};
+        var endpoint = "{{ widget.endpoint }}";
+
+        function fetchData() {
+            fetch(endpoint)
+                .then(response => response.json())
+                .then(data => {
+                    const button = widget.querySelector('.hassio-button');
+                    button.setAttribute('data-state', data.state);
+                    button.textContent = data.state === 'on' ? 'Turn off' : 'Turn on';
+                });
+        }
+
+        function toggleSwitch() {
+            const button = widget.querySelector('.hassio-button');
+            const currentState = button.getAttribute('data-state');
+            const newState = currentState === 'on' ? 'off' : 'on';
+
+            fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ state: newState }),
+            })
+            .then(response => response.json())
+            .then(fetchData);  // Update the button state after toggling the switch
+        }
+
+        // Run initially
+        fetchData();
+
+        // Then run at set interval
+        setInterval(fetchData, updateInterval);
+
+        // Attach the toggleSwitch function to the button click event
+        widget.querySelector('.hassio-button').addEventListener('click', toggleSwitch);
+    })();
+</script>

@@ -1,0 +1,57 @@
+<!-- templates/widgets/weather.html -->
+<!-- templates/widgets/weather.html -->
+<div id="{{ widget.id }}" class="widget bg-white bg-opacity-25 border border-blue-500 rounded-lg shadow-lg p-4 backdrop-blur-md" style="grid-column-start: {{ widget.col_start }}; grid-column-end: {{ widget.col_end }}; grid-row-start: {{ widget.row_start }}; grid-row-end: {{ widget.row_end }};">
+    <h2 id="location" class="text-2xl font-bold mb-2">Weather</h2>
+    <div id="current-weather" class="flex justify-between">
+        <div class="flex flex-col">
+            <span id="current-temp" class="text-6xl font-bold"></span>
+            <span id="current-humidity" class="font-semibold mt-1 text-gray-500">Humidity: 50%</span>
+            <span id="current-wind" class="font-semibold mt-1 text-gray-500">Wind: 10 km/h</span>
+            <img id="current-icon" src="" alt="Weather icon">
+        </div>
+        <div class="flex flex-col flex-grow">
+            <div id="forecast-list" class="flex justify-between mt-12"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Fetch weather data from API and update widget
+    // You'll need to replace 'your-api-key' with your actual API key
+    fetch('/dashboard/weather')
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 200) {
+            const currentWeather = data.data.current;
+            const forecast = data.data.forecast;
+
+            document.getElementById('location').textContent = `${currentWeather.name}, ${currentWeather.sys.country}`;
+            document.getElementById('current-temp').textContent = `${currentWeather.main.temp} °F`;
+            document.getElementById('current-humidity').textContent = `Humidity: ${currentWeather.main.humidity}%`;
+            document.getElementById('current-wind').textContent = `Wind Speed: ${currentWeather.wind.speed} MPH`;
+            document.getElementById('current-icon').src = `http://openweathermap.org/img/w/${currentWeather.weather[0].icon}.png`;
+
+            const forecastList = document.getElementById('forecast-list');
+            forecastList.classList.add('flex', 'flex-row', 'overflow-auto');
+            let currentDay = '';
+            let dayElement;
+            forecast.list.forEach(forecast => {
+                const forecastDate = forecast.dt_txt.split(' ')[0];
+                if (forecastDate !== currentDay) {
+                    currentDay = forecastDate;
+                    dayElement = document.createElement('div');
+                    dayElement.classList.add('day', 'flex', 'flex-col', 'items-center', 'space-y-2', 'mr-4');
+                    forecastList.appendChild(dayElement);
+                }
+                const forecastElement = document.createElement('div');
+                forecastElement.classList.add('forecast' , 'flex', 'flex-col', 'items-center', 'space-y-2');
+                forecastElement.innerHTML = `
+                        <p>${forecast.main.temp} °F</p>
+                        <img src="http://openweathermap.org/img/w/${forecast.weather[0].icon}.png" alt="Weather icon">
+                        <p>${forecast.dt_txt}</p>
+                    `;
+                    dayElement.appendChild(forecastElement);
+                });
+            }
+        });
+</script>

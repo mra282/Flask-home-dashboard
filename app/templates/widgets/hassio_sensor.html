@@ -1,0 +1,26 @@
+<div id="{{ widget.id }}" class="widget hassio-sensor-widget bg-opacity-25 border border-blue-500 rounded-lg shadow-lg p-4 backdrop-blur-md" style="grid-column-start: {{ widget.col_start }}; grid-column-end: {{ widget.col_end }}; grid-row-start: {{ widget.row_start }}; grid-row-end: {{ widget.row_end }};">
+    <h2 class="text-xl font-bold">Sensor State</h2>
+    <p class="text-lg" data-value="0">0</p>
+</div>
+
+<script>
+    (function() {
+        var widget = document.querySelector('#{{ widget.id }}');
+        var updateInterval = {{ widget.update_interval }};
+        var endpoint = "{{ widget.endpoint }}";
+
+        function fetchData() {
+            fetch(endpoint)
+                .then(response => response.json())
+                .then(data => {
+                    widget.querySelector('[data-value]').textContent = data.state;
+                });
+        }
+
+        // Run initially
+        fetchData();
+
+        // Then run at set interval
+        setInterval(fetchData, updateInterval);
+    })();
+</script>

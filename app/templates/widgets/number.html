@@ -1,0 +1,39 @@
+<div class="widget number-widget bg-opacity-25 border border-blue-500 rounded-lg shadow-lg p-4 backdrop-blur-md" style="grid-column-start: {{ widget.col_start }}; grid-column-end: {{ widget.col_end }}; grid-row-start: {{ widget.row_start }}; grid-row-end: {{ widget.row_end }};">
+    <h2 class="number-label">Label</h2>
+    <p class="number-value">0</p>
+    <p class="date-updated"></p>
+</div>
+
+<script>
+    function updateNumberWidget(element, label, value, updated) {
+        element.setAttribute('data-label', label);
+        element.setAttribute('data-value', value);
+        element.setAttribute('data-updated', updated);
+
+        const labelElement = element.querySelector('.number-label');
+        const valueElement = element.querySelector('.number-value');
+        const updatedElement = element.querySelector('.date-updated');
+
+        labelElement.textContent = label;
+        valueElement.textContent = value;
+        updatedElement.textContent = updated;
+    }
+
+    window.widget = document.querySelector('.number-widget');
+    window.updateInterval = {{ widget.update_interval }};
+    window.endpoint = "{{ widget.endpoint }}";
+
+    function fetchData() {
+        fetch(window.endpoint)
+            .then(response => response.json())
+            .then(data => {
+                updateNumberWidget(window.widget, data.label, data.value, data.updated);
+            });
+    }
+
+    // Run initially
+    fetchData();
+
+    // Then run at set interval
+    setInterval(fetchData, window.updateInterval);
+</script>
